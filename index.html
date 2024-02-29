@@ -6,8 +6,8 @@
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <title>Multi Postcode to IMD Decile Lookup</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="https://trst.uk/css/app.css" rel="stylesheet">
-<script src="https://kit.fontawesome.com/19a0336ebe.js" crossorigin="anonymous"></script>
+    <link href="https://trst.uk/css/app.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/19a0336ebe.js" crossorigin="anonymous"></script>
 <style>
     body {
         font-family: 'Raleway', sans-serif;
@@ -128,6 +128,14 @@
         outline: none; /* Removes the default focus outline */
         border-color: #5D3FD3; /* Adds a custom border color on focus */
     }
+    #spinner {
+    position: fixed; /* or absolute */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2em;
+    color: #5D3FD3;
+    }
 </style>
 </head>
 
@@ -143,6 +151,11 @@
         <input type="submit" value="Lookup">
     </form>
     <div id="result"></div>
+
+    <div id="spinner" style="display: none;">
+    <i class="fas fa-spinner fa-spin" style="font-size: 24px;"></i>
+    </div>
+
 
     <script>
         document.getElementById('postcodeForm').addEventListener('submit', function(event) {
@@ -163,6 +176,9 @@
         }
 
         function lookupPostcodes() {
+    // Show the spinner
+    document.getElementById('spinner').style.display = 'block';
+
     fetch('https://raw.githubusercontent.com/TrustImpact/IMD/main/IMDpostcodes.csv')
         .then(response => response.text())
         .then(data => {
@@ -175,18 +191,23 @@
                 postcode = postcode.trim();
                 const match = csvData.find(row => row.postcode === postcode);
                 if (match) {
-                    // Ensure this line is correctly formatted
                     resultDiv.innerHTML += `IMD Decile for ${postcode}: ${match.decile}<br>`;
                 } else {
                     resultDiv.innerHTML += `Postcode not found: ${postcode}<br>`;
                 }
             });
+            
+            // Hide the spinner after processing postcodes
+            document.getElementById('spinner').style.display = 'none';
         })
         .catch(error => {
             console.error("Error fetching or parsing CSV file:", error);
             document.getElementById("result").innerHTML = "An error occurred.";
+            // Hide the spinner if there's an error
+            document.getElementById('spinner').style.display = 'none';
         });
 }
+
 
 </script>
 
